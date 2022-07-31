@@ -35,7 +35,7 @@ export const findUser = async (id: string) => {
                             .getOne();
 
     if(!find_user){
-        return { "message": "Usuário Não Encontrado", "data": {} }
+        return { "message": "Usuário Não Encontrado", "data": {}, "status": 400 }
     }
 
     return { "message": "Usuário Encontrado", "data": find_user, "status": 200 }
@@ -44,15 +44,16 @@ export const findUser = async (id: string) => {
 export const updateUser = async ({name, login, password, email, id}: IUserRepositories) => {
     const user = UsersRepositories;
 
-    const find_user = await user.createQueryBuilder()
-    .select("user")
-    .from(Users, "user")
-    .where("user.id = :id", { id })
-    .getOne();
+    const find_user = await findUser(id);
+    if(find_user.status === 400) {
+        return find_user;
+    }
 
-    const update_user = user.create({name, login, password, email});
+    const update_user = await user.createQueryBuilder()
+    .update() 
+    .set({ name: name, login: login, email: email })
+    .where("id = :id", { id })
+    .execute();
 
-    update_user.password = generatePassword(update_user.password);
-    await user.save(update_user);
     return update_user;
 }
