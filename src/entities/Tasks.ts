@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, UpdateDateColumn } from "typeorm";
 import { v4 as uuid } from "uuid";
 import { Works } from "./Works";
 
@@ -14,6 +14,11 @@ export class Tasks {
     status: boolean;
     @Column({ type: 'text'})
     work_id: string;
+    @CreateDateColumn()
+    created_at: Date;
+    @UpdateDateColumn()
+    updated_at: Date;
+ 
 
     @ManyToOne(() => Works)
     @JoinColumn({ name: 'work_id' })

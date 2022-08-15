@@ -1,5 +1,6 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn } from "typeorm";
 import { v4 as uuid } from "uuid";
+import { Tasks } from "./Tasks";
 import { Users } from "./Users";
 
 @Entity()
@@ -12,10 +13,19 @@ export class Works {
     description: string;
     @Column({type: 'text'})
     user_id: string
+    @CreateDateColumn()
+    created_at: Date;
+    @UpdateDateColumn()
+    updated_at: Date;
+ 
 
     @ManyToOne(() => Users)
     @JoinColumn({ name: 'user_id'})
     user: Users
+
+    @OneToMany(() => Tasks, (tasks) => tasks.work_id)
+    @JoinColumn({ name: 'tasks'})
+    tasks: Tasks[]
 
     constructor() {
         if(!this.id){

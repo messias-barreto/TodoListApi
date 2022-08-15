@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createUser as createUserService, findUser, updateUser } from "../services/UserService"
+import { createUser as createUserService, findAllUsers, findUser, updateUser } from "../services/UserService"
 
 interface IUser {
     name: string;
@@ -28,6 +28,11 @@ export class UserController {
             return response.status(400).json(user.message)
         }
         return response.status(200).json(user)
+    }
+
+    async AllUsers(request: Request, response: Response) {
+        const user = await findAllUsers();
+        return response.status(200).json(user);
     }
 
     async findOneUser(request: Request, response: Response) {

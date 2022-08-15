@@ -15,6 +15,7 @@ export const getAllTasks = async (work_id: string) => {
                                 .select(["tasks.id", "tasks.title", "tasks.status"])
                                 .from(Tasks, "tasks")
                                 .where("tasks.work_id = :work", { work: work_id })
+                                .orderBy("tasks.updated_at", "ASC")
                                 .getMany();
 
     if(!find_tasks){
@@ -28,17 +29,21 @@ export const getAllTasks = async (work_id: string) => {
 export const create = async({title, description, work_id}: ITasks) => {
     const task = TaskRepositories;
 
-    const new_tesk = task.create({title, description, work_id});
-    await task.save(new_tesk);
-    return new_tesk;
+    const new_task = task.create({title, description, work_id});
+    await task.save(new_task);
+
+    if(new_task instanceof Error) {
+        return { "message": "Não foi possível Adicionar a Tarefa", "status": 400 }
+    }
+    return { "message": "Tarefa foi Adicionada!!", "data": new_task, "status": 200 }
 }
 
-export const updateStatusTask = async(id: string, status: boolean) => {
+export const updateStatusTask = async(id: string) => {
     const task = TaskRepositories;
 
     const update_task = await task.createQueryBuilder()
     .update()
-    .set({ status: status})
+    .set({ status: true})
     .where("id = :id", {id})
     .execute()
 
@@ -46,7 +51,7 @@ export const updateStatusTask = async(id: string, status: boolean) => {
         return { "message": "Não foi possível atualizar a Tarefa", "status": 400 }
     }
 
-    return { "message": "Status da Tarefa Atualizada!!" , "data": update_task, "status": 200}
+    return { "message": "Tarefa foi Concluída!!" , "data": update_task, "status": 200}
 }
 
 

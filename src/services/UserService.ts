@@ -26,6 +26,20 @@ export const createUser = async ({name, login, password, email}: IUserRepositori
     return new_user;
 }
 
+export const findAllUsers = async () => {
+    const user = UsersRepositories;
+    const find_user = await user.createQueryBuilder()
+                            .select(["user.name", "user.login", "user.email"])
+                            .from(Users, "user")
+                            .getMany();
+
+    if(!find_user){
+        return { "message": "Usuário Não Encontrado", "data": {}, "status": 400 }
+    }
+
+    return { "message": "Usuário Encontrado", "data": find_user, "status": 200 }
+}
+
 export const findUser = async (id: string) => {
     const user = UsersRepositories;
     const find_user = await user.createQueryBuilder()
