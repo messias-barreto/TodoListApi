@@ -1,5 +1,6 @@
 import { Users } from "../entities/Users";
 import { UsersRepositories } from "../repositories/UserRepositories";
+import JWT from 'jsonwebtoken';
 
 interface IUserRepositories {
     id?: string,
@@ -10,11 +11,44 @@ interface IUserRepositories {
     admin?: boolean;
 }
 
+
 const generatePassword = (password: string) => {
     const bcrypt = require('bcryptjs');
     const salt = bcrypt.genSaltSync(10);
-
+    
     return bcrypt.hashSync(password, salt);
+}
+
+const comparePassword = (password: string, hashPassword: string) => {
+    const bcrypt = require('bcryptjs');
+    return bcrypt.compare(password, hashPassword);
+}
+ 
+const createToken = (id: string) => {
+        const token = JWT.sign({userToken: id}, process.env.SECRET, { expiresIn: 300 });
+        return token;
+}
+
+export const authUser = async (login: string, password: string) => {
+    const user = UsersRepositories;
+    const find_user = await user.createQueryBuilder()
+                            .select(["user.name", "user.login", "user.email", "user.password"])
+                            .from(Users, "user")
+                            .where("user.login = :login", { login })
+                            .orWhere("user.email = :login", { password })
+                            .getOne();
+
+    if(!find_user){
+        return { "message": "Usuário Não Encontrado", "data": {}, "status": 400 }
+    }
+
+    const password_validation = await comparePassword(password, find_user.password).then((res: boolean) => { return res })
+    if(password_validation !== true) {
+        return { "message": "Usuário Não Encontrado", "data": {}, "status": 400 }
+    }
+
+    const token = createToken(find_user.id);
+    return { "message": "Usuário Encontrado", "data": find_user, "status": 200, "token": token }
 }
 
 export const createUser = async ({name, login, password, email}: IUserRepositories) => {
@@ -71,3 +105,4 @@ export const updateUser = async ({name, login, password, email, id}: IUserReposi
 
     return update_user;
 }
+
