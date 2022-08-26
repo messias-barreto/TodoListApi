@@ -1,14 +1,5 @@
 import { Request, Response } from "express";
-import { authUser, createUser as createUserService, findAllUsers, findUser, updateUser } from "../services/UserService"
-import jwt from 'jsonwebtoken';
-interface IUser {
-    name: string;
-    login: string;
-    password?: string;
-    email?: string;
-    admin?: boolean;
-}
-const SECRET = "6e789dd3bbd98e4eeda2e3fa03929ecbecd2bcff";
+import { authUser, createUser as createUserService, findAllUsers, findUser, updateUser } from "../services/UserService";
 
 export class UserController {
     async create(request: Request, response: Response){

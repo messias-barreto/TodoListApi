@@ -26,13 +26,14 @@ const comparePassword = (password: string, hashPassword: string) => {
  
 const createToken = (id: string) => {
         const token = JWT.sign({userToken: id}, process.env.SECRET, { expiresIn: 300 });
+        const refresh_token = JWT.sign({userToken: id}, process.env.SECRET, { expiresIn: 300 });
         return token;
 }
 
 export const authUser = async (login: string, password: string) => {
     const user = UsersRepositories;
     const find_user = await user.createQueryBuilder()
-                            .select(["user.name", "user.login", "user.email", "user.password"])
+                            .select(["user.id", "user.name", "user.login", "user.email", "user.password"])
                             .from(Users, "user")
                             .where("user.login = :login", { login })
                             .orWhere("user.email = :login", { password })
@@ -48,7 +49,7 @@ export const authUser = async (login: string, password: string) => {
     }
 
     const token = createToken(find_user.id);
-    return { "message": "Usuário Encontrado", "data": find_user, "status": 200, "token": token }
+    return { "message": "Usuário Encontrado", "data": {id: find_user.id, login: find_user.login, name: find_user.name}, "status": 200 }
 }
 
 export const createUser = async ({name, login, password, email}: IUserRepositories) => {

@@ -70,3 +70,19 @@ export const remove = async(id: string) => {
     
     return { "message": "Tarefa removida com sucesso", "status": 200 }
 }
+
+export const removeLinkedTasks = async (work_id: string) => {
+    const tasks = TaskRepositories;
+
+    const removed_tasks = tasks.createQueryBuilder("tasks")
+    .delete()
+    .from("tasks")
+    .where("tasks.work_id = :work_id", { work_id })
+    .execute();
+        
+    if (removed_tasks instanceof Error) {
+        return { "message": "Não foi possível Remover as Tarefas", "status": 400 }
+    }
+
+    return { "message": "Tarefas Removidas!!", "status": 200 }
+}

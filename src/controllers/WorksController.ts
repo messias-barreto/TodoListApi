@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createWorks as createWorksService, getAllWorks, getOneWork } from "../services/WorksService"
+import { createWorks as createWorksService, getAllWorks, getOneWork, removeWork } from "../services/WorksService"
 
 export class WorkController { 
     async getAll(request: Request, response: Response) {
@@ -31,6 +31,13 @@ export class WorkController {
         }
 
         return response.status(200).json(work);
+    }
+
+    async remove(request: Request, response: Response) {
+        const { id } = request.params;
+
+        const work = await removeWork(id);
+        return response.status(work.status).json(work);
     }
 
 }

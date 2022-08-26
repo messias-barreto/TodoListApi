@@ -23,7 +23,9 @@ export class Works {
     @JoinColumn({ name: 'user_id'})
     user: Users
 
-    @OneToMany(() => Tasks, (tasks) => tasks.work_id)
+    @OneToMany(() => Tasks, (tasks) => tasks.work_id, { 
+        cascade: true 
+    })
     @JoinColumn({ name: 'tasks'})
     tasks: Tasks[]
 

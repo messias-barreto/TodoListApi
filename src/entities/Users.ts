@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { v4 as uuid } from "uuid";
+import { RefreshToken } from "./RefreshToken";
 
 @Entity()
 export class Users {
@@ -7,14 +8,15 @@ export class Users {
     id: string;
     @Column({type: 'text'})
     name: string;
-    @Column({type: 'text'})
+    @Column({type: 'text', unique: true})
     login: string;
+    @Column({type: 'text', unique: true})
+    email: string;
     @Column({type: 'text'})
     password: string;
-    @Column({type: 'text'})
-    email: string;
-    @Column({type: 'boolean', default: false})
-    admin: boolean;
+
+    @OneToMany(type => RefreshToken, refreshToken => refreshToken.user)
+    refreshTokens: RefreshToken
 
     constructor() {
         if(!this.id){
